@@ -7,13 +7,11 @@
 
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav>
-            <b-nav-item to="/" >Home</b-nav-item>
-            <b-nav-item to="/speel" >Speel</b-nav-item>
-            <b-nav-item to="/partijen" >
-              Partijen</b-nav-item
-            >
-            <b-nav-item to="/contacten" > Contacten</b-nav-item>
-            <b-nav-item to="/account" > Account</b-nav-item>
+            <b-nav-item to="/">Home</b-nav-item>
+            <b-nav-item to="/play">Speel</b-nav-item>
+            <b-nav-item to="/games"> Partijen</b-nav-item>
+            <b-nav-item to="/contacts"> Contacten</b-nav-item>
+            <b-nav-item to="/account"> Account</b-nav-item>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
@@ -39,5 +37,4 @@ export default {
   padding-right: 5px;
   text-decoration: none;
 }
-
 </style>
