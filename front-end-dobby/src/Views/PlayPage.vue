@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Game v-bind:board="bord"/>
+        <Game v-bind:board="bord" v-if="show"/>
         <GameChat v-bind:chat="chatberichten"/>
     </div>
 </template>
@@ -122,6 +122,7 @@ export default {
                 {field:99},
 
             ],
+            show: false,
         };
         
     },

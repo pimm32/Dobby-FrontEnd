@@ -7,10 +7,12 @@
 
 <script>
 import Header from './components/layout/Header';
+//import Navbar from './components/Navbar';
 export default {
   name:"app",
   components: {
-    Header
+    Header,
+    //Navbar,
   }
 }
 </script>
