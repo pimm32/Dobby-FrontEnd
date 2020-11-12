@@ -50,7 +50,7 @@ export default {
 
 <style scoped>
 .header {
-  background: rgb(95, 120, 233);
+  background: rgb(14, 45, 184);
   color: #fff;
   text-align: center;
   padding: 10px;
@@ -61,7 +61,6 @@ export default {
   text-decoration: none;
 }
 .navbar {
-  color: blue;
-  background: #328fdb;
+  background:rgb(99, 123, 240);
 }
 </style>

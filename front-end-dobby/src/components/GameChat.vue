@@ -31,7 +31,6 @@
 //import axios from "axios";
 import Vue from "vue";
 import Chat from "vue-beautiful-chat";
-//import ChatMessage from "../components/ChatMessage";
 Vue.use(Chat);
 export default {
     name: "GameChat",
