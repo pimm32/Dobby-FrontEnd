@@ -1,13 +1,39 @@
 <template>
     <div>
-        <Game v-bind:board="bord"/>
+        <br/> <br/> <br/>
+        <b-row>
+            <b-col cols="4"/>
+            <b-col cols="2">
+                speler 1 id
+            </b-col>
+            <b-col cols="2">
+                speler 2 id
+            </b-col>
+            <b-col cols="4"/>
+        </b-row>
+        <br/> <br/> <br/> <br/> 
+        <b-row>
+            <b-col cols="2"/>
+            <b-col cols="4">
+            <Game v-bind:board="bord"/>
+            </b-col>
+            <b-col cols="3" height="120px">
+                USER 1
+                 
+                USER 2
+            </b-col>
+            <b-col cols="3">
+                <game-chat v-bind:chat="chatberichten"/>
+            </b-col>
+
+        </b-row>
         
     </div>
 </template>
 
 <script>
 import Game from "../components/Game";
-//import GameChat from "../components/GameChat";
+import GameChat from '../components/GameChat.vue';
 export default {
     data(){
         return{
@@ -129,6 +155,7 @@ export default {
     components:{
            // GameChat,
             Game,
+        GameChat,
         }
     
 }
