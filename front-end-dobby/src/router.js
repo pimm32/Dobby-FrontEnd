@@ -4,9 +4,11 @@ import PlayPage from './Views/PlayPage.vue'
 import GamesPage from './Views/GamesPage.vue'
 import ContactPage from './Views/ContactPage.vue'
 import AccountPage from './Views/AccountPage.vue'
+import NewGamePage from './Views/NewGamePage.vue'
 import Login from "./components/Login.vue"
 import Register from "./components/Register.vue"
 import Dashboard from "./components/Dashboard.vue"
+import PlayerPage from './Views/PlayersPage.vue'
 
 Vue.use(Router)
 
@@ -34,7 +36,12 @@ Vue.use(Router)
         component: ContactPage
       },
       {
-        path: '/account',
+        path: '/players',
+        name: 'Players',
+        component: PlayerPage
+      },
+      {
+        path: '/account/:gebruiker',
         name: 'Account',
         component: AccountPage
       },
@@ -47,6 +54,11 @@ Vue.use(Router)
         path: '/register',
         name: 'register',
         component: Register
+      },
+      {
+        path: '/newGame',
+        name: 'newGame',
+        component: NewGamePage
       },
       {
         path: '/dashboard',

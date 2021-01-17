@@ -1,13 +1,14 @@
 <template>
     <div>
+        {{partij}}
         <br/> <br/> <br/>
         <b-row>
             <b-col cols="4"/>
             <b-col cols="2">
-                speler 1 id
+                {{partij.spelers[0].id}}
             </b-col>
             <b-col cols="2">
-                speler 2 id
+                {{partij.tijdWitSpeler}}
             </b-col>
             <b-col cols="4"/>
         </b-row>
@@ -15,17 +16,25 @@
         <b-row>
             <b-col cols="2"/>
             <b-col cols="4">
-            <Game v-bind:board="bord"/>
+            <Game/>
             </b-col>
             <b-col cols="3" height="120px">
-                USER 1
-                 
-                USER 2
+                <zetten-lijst v-bind:zetten="partij.zetten"/>
             </b-col>
             <b-col cols="3">
                 <game-chat v-bind:chat="chatberichten"/>
             </b-col>
 
+        </b-row>
+        <b-row>
+            <b-col cols="4"/>
+            <b-col cols="2">
+                {{partij.spelers[1].id}}
+            </b-col>
+            <b-col cols="2">
+                {{partij.tijdZwartSpeler}}
+            </b-col>
+            <b-col cols="4"/>
         </b-row>
         
     </div>
@@ -34,9 +43,13 @@
 <script>
 import Game from "../components/Game";
 import GameChat from '../components/GameChat.vue';
+import axios from "axios";
+import ZettenLijst from '../components/ZettenLijst.vue';
 export default {
     data(){
         return{
+            partij: null,
+            id: 1,
             chatberichten:[
                 {color:"white", text:"blabla1"},
                 {color:"black", text:"blabla2"},
@@ -152,10 +165,20 @@ export default {
         };
         
     },
+    created(){
+        axios
+      .get("https://localhost:44300/partij/Get/" + this.id)
+      .then((res) => (this.partij =  res.data))
+      .catch((err) => console.log(err));
+
+      console.log(this.partij);
+    },
+    
     components:{
            // GameChat,
             Game,
         GameChat,
+        ZettenLijst,
         }
     
 }

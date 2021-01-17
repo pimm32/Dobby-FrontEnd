@@ -92,6 +92,7 @@
 <script>
 import Vue from "vue";
 import Vuelidate from "vuelidate";
+import Axios from "axios";
 import firebase from "firebase";
 import { required, minLength, maxLength, sameAs, email } from "vuelidate/lib/validators";
 Vue.use(Vuelidate);
@@ -114,13 +115,26 @@ export default {
         .then(data => {
           data.user
             .updateProfile({
-              displayName: this.gebruikersnaam
+              displayName : this.gebruikersnaam,             
             })
-            .then(() => {});
+            .then(() => {this.Register(),  this.$router.replace({ name: "dashboard" })});
+
         })
         .catch(err => {
-          this.error = err.message;
-        });
+          alert(err.message)
+        })
+        console.log(this.gebruikersnaam);
+    },
+    Register(){
+        Axios({
+        method: "post",
+        url: "https://i417025core.venus.fhict.nl/gebruiker/Post",
+        data: {
+        Gebruikersnaam: this.gebruikersnaam,
+        Email: this.email,
+        Rating: 1200,
+        },
+      });
     },
     Reset(e) {
       e.preventDefault();

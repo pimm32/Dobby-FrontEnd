@@ -10,8 +10,9 @@
             <b-nav-item to="/">Home</b-nav-item>
             <b-nav-item to="/play">Speel</b-nav-item>
             <b-nav-item to="/games"> Partijen</b-nav-item>
+            <b-nav-item to="/players"> Gebruikers</b-nav-item>
             <b-nav-item v-if="user.loggedIn" to="/contacts"> Contacten</b-nav-item>
-            <b-nav-item v-if="user.loggedIn" to="/account"> Account</b-nav-item>
+            <b-nav-item v-if="user.loggedIn" @click="inspecteerGebruiker()"> Account</b-nav-item>
             <b-nav-item v-if="user.loggedIn"><a @click.prevent="signOut"> Log Out</a></b-nav-item>
             <b-nav-item v-if="!user.loggedIn" to="/login"> Login</b-nav-item>
             <b-nav-item v-if="!user.loggedIn" to="/register"> Register</b-nav-item>
@@ -25,6 +26,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import Axios from "axios";
 import firebase from "firebase";
 export default {
   computed: {
@@ -32,7 +34,7 @@ export default {
 // map `this.user` to `this.$store.getters.user`
       user: "user"
     })
-  },
+  },  
   methods: {
     signOut() {
       firebase
@@ -43,7 +45,11 @@ export default {
             name: "home"
           });
         });
-    }
+    },
+    async inspecteerGebruiker(){
+      this.$router.push({ name: 'Account', params: { gebruiker :  (await Axios.
+      get("https://i417025core.venus.fhict.nl/gebruiker/GetByEmail/" + this.user.data.email)).data }});
+    },
   }
 };
 </script>
