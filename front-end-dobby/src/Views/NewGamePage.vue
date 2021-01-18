@@ -5,7 +5,8 @@
       class="mt-5"
       v-if="
         this.$route.params.uitgedaagdeGebruiker == null ||
-        this.$route.params.uitdager == null
+        this.$route.params.uitdager == null ||
+        this.user.data == null
       "
     >
       Er is iets fout gegaan probeer het opnieuw <br /><br /><br /><br />
@@ -151,10 +152,12 @@ export default {
       speeltempoSoort: null,
       speeltempoFisher: null,
       speeltempoFisherSoort: null,
+      partij: null,
+      apiDomain: "",
     };
   },
   methods: {
-    PartijToevoegen(e) {
+    async PartijToevoegen(e) {
       
       e.preventDefault();
       if (
@@ -169,49 +172,47 @@ export default {
         SpeeltempoMinuten: this.speeltempoBerekenen(),
         SpeeltempoFisherSeconden: this.speeltempoFisherBerekenen(),
         TijdWitSpeler: this.speeltempoBerekenen(),
-        Spelers: this.spelersBerekenen(),
         TijdZwartSpeler: this.speeltempoBerekenen(),
       };
       console.log(newPartij);
-      let partij;
-      Axios({
+      this.partij = (await Axios({
         method: "post",
-        url: "https://i417025core.venus.fhict.nl/partij/Post",
+        url: this.apiDomain + "partij/Post",
         data: {
           SpeeltempoMinuten: this.speeltempoBerekenen(),
         SpeeltempoFisherSeconden: this.speeltempoFisherBerekenen(),
         TijdWitSpeler: this.speeltempoBerekenen(),
         TijdZwartSpeler: this.speeltempoBerekenen(),
-        Spelers: this.spelersBerekenen()
         },
-      }).then((res) => partij = res.data);
+      })).data;
       let kleur1;
       let kleur2;
       if(this.kleurUitdager === "wit"){
-          kleur1 = "wit";
-          kleur2 = "zwart";
+          kleur1 = "Wit";
+          kleur2 = "Zwart";
       }
       else{
-          kleur1 = "zwart";
-          kleur2 = "wit";
+          kleur1 = "Zwart";
+          kleur2 = "Wit";
       }
+      console.log(this.partij)
       Axios({
         method: "post",
-        url: "https://i417025core.venus.fhict.nl/speler/Post",
+        url: this.apiDomain + "speler/Post",
         data: {
          gebruikerId: this.uitdager.id,
          ratingAanBeginVanWedstrijd: this.uitdager.rating,
-         partijId: partij.id,
+         partijId: this.partij.id,
          kleurSpeler: kleur1
         },
       });
       Axios({
         method: "post",
-        url: "https://i417025core.venus.fhict.nl/speler/Post",
+        url: this.apiDomain + "speler/Post",
         data: {
          gebruikerId: this.uitgedaagdeGebruiker.id,
          ratingAanBeginVanWedstrijd: this.uitgedaagdeGebruiker.rating,
-         partijId: partij.id,
+         partijId: this.partij.id,
          kleurSpeler: kleur2
         },
       })
@@ -249,7 +250,14 @@ export default {
       }
     },
   },
-  created() {},
+  created() {
+      if(window.location.href.substring(0, 16) === "http://localhost"){
+        this.apiDomain = "https://localhost:44300/";
+      }
+      else{
+        this.apiDomain = "https://i417025core.venus.fhict.nl/";
+      }
+  },
 };
 </script>
 

@@ -12,7 +12,7 @@
             <b-nav-item to="/games"> Partijen</b-nav-item>
             <b-nav-item to="/players"> Gebruikers</b-nav-item>
             <b-nav-item v-if="user.loggedIn" to="/contacts"> Contacten</b-nav-item>
-            <b-nav-item v-if="user.loggedIn" @click="inspecteerGebruiker()"> Account</b-nav-item>
+            <b-nav-item v-if="user.loggedIn" :disabled="!this.user.data" @click="inspecteerGebruiker()"> Account</b-nav-item>
             <b-nav-item v-if="user.loggedIn"><a @click.prevent="signOut"> Log Out</a></b-nav-item>
             <b-nav-item v-if="!user.loggedIn" to="/login"> Login</b-nav-item>
             <b-nav-item v-if="!user.loggedIn" to="/register"> Register</b-nav-item>
@@ -29,6 +29,11 @@ import { mapGetters } from "vuex";
 import Axios from "axios";
 import firebase from "firebase";
 export default {
+  data(){
+    return{
+      apiDomain: "",
+    }
+  },
   computed: {
     ...mapGetters({
 // map `this.user` to `this.$store.getters.user`
@@ -48,8 +53,16 @@ export default {
     },
     async inspecteerGebruiker(){
       this.$router.push({ name: 'Account', params: { gebruiker :  (await Axios.
-      get("https://i417025core.venus.fhict.nl/gebruiker/GetByEmail/" + this.user.data.email)).data }});
+      get(this.apiDomain + "gebruiker/GetByEmail/" + this.user.data.email)).data }});
     },
+  },
+  created(){
+    if(window.location.href.substring(0, 16) === "http://localhost"){
+        this.apiDomain = "https://localhost:44300/";
+      }
+      else{
+        this.apiDomain = "https://i417025core.venus.fhict.nl/";
+      }
   }
 };
 </script>

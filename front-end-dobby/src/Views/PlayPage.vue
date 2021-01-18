@@ -50,6 +50,7 @@ export default {
         return{
             partij: null,
             id: 1,
+            apiDomain: "",
             chatberichten:[
                 {color:"white", text:"blabla1"},
                 {color:"black", text:"blabla2"},
@@ -166,8 +167,14 @@ export default {
         
     },
     created(){
+       if(window.location.href.substring(0, 16) === "http://localhost"){
+        this.apiDomain = "https://localhost:44300/";
+      }
+      else{
+        this.apiDomain = "https://i417025core.venus.fhict.nl/";
+      } 
         axios
-      .get("https://localhost:44300/partij/Get/" + this.id)
+      .get(this.apiDomain + "partij/get/" + this.id)
       .then((res) => (this.partij =  res.data))
       .catch((err) => console.log(err));
 

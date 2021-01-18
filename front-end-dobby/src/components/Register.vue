@@ -105,6 +105,7 @@ export default {
         email: "",
       show: true,
       windowWidth: window.innerWidth,
+      apiDomain: "",
     };
   },
   methods: {
@@ -128,7 +129,7 @@ export default {
     Register(){
         Axios({
         method: "post",
-        url: "https://i417025core.venus.fhict.nl/gebruiker/Post",
+        url: this.apiDomain + "gebruiker/Post",
         data: {
         Gebruikersnaam: this.gebruikersnaam,
         Email: this.email,
@@ -173,6 +174,14 @@ export default {
       this.windowWidth = window.innerWidth;
     };
   },
+  created(){
+    if(window.location.href.substring(0, 16) === "http://localhost"){
+        this.apiDomain = "https://localhost:44300/";
+      }
+      else{
+        this.apiDomain = "https://i417025core.venus.fhict.nl/";
+      }
+  }
 };
 </script>
 

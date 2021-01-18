@@ -50,6 +50,7 @@ export default {
       ],
       partijenDieNogBezigZijn: [],
       partijenDieAfgelopenZijn: [],
+      apiDomain: "",
     };
   },
   methods: {
@@ -61,8 +62,14 @@ export default {
     },
   },
   created(){
+    if(window.location.href.substring(0, 16) === "http://localhost"){
+        this.apiDomain = "https://localhost:44300/";
+      }
+      else{
+        this.apiDomain = "https://i417025core.venus.fhict.nl/";
+      }
       axios
-      .get("https://i417025core.venus.fhict.nl/partij/GetAll")
+      .get( this.apiDomain + "partij/GetAll")
       .then((res) => (this.partijenDieNogBezigZijn = res.data.partijenDieNogBezigZijn, this.partijenDieAfgelopenZijn = res.data.partijenDieAfgelopenZijn))
       .catch((err)=> console.log(err));
 

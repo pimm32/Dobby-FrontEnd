@@ -77,6 +77,7 @@ export default {
       ],
       gebruikersLijst: [
       ],
+      apiDomain: "",
     };
   },
   methods: {
@@ -87,9 +88,17 @@ export default {
         this.currentPage = 1;
     }
   },
-  mounted(){
+  created(){
+    if(window.location.href.substring(0, 16) === "http://localhost"){
+        this.apiDomain = "https://localhost:44300/";
+      }
+      else{
+        this.apiDomain = "https://i417025core.venus.fhict.nl/";
+      }
+    console.log(window.location.href.substring(0,15))
+    console.log(this.apiDomain)
       axios
-      .get("https://i417025core.venus.fhict.nl/gebruiker/GetAll")
+      .get(this.apiDomain +"gebruiker/GetAll")
       .then((res) => (this.gebruikersLijst = res.data, this.totalRows =this.gebruikersLijst.length))
       .catch((err)=> console.log(err));
   },

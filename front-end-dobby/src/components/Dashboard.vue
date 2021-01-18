@@ -1,15 +1,17 @@
 <template>
   <div class="container">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center" v-if="this.user.data">
       <div class="col-md-8">
         <div class="card">
           <div class="card-header">Dashboard</div>
           <div class="card-body">
-            <div class="alert alert-success" role="alert">You: {{user.data.displayName}}, are logged in!</div>
-            HALLO??
+            <div class="alert alert-success" role="alert">You: {{user.data.displayName}}, are logged in! <br/></div>
           </div>
         </div>
       </div>
+    </div>
+    <div v-else>
+      Oops er gaat iets fout
     </div>
   </div>
 </template>

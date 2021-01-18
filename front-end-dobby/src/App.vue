@@ -13,6 +13,16 @@ export default {
   components: {
     Header,
     //Navbar,
+  },
+  methods: {
+    getApiDomain(){
+      if(window.location.href.substring(0, 15) === "http://localhost"){
+        return "https://localhost:44300/";
+      }
+      else{
+        return "https://i417025core.venus.fhict.nl/";
+      }
+    }
   }
 }
 </script>

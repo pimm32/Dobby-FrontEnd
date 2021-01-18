@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div v-if="this.user.data">
     <div
       v-if="this.user.data.email === this.gebruiker.email"
     >
@@ -9,6 +10,7 @@
         </b-card-text>
 
         <b-card-text> mijn email: {{ this.gebruiker.email }} </b-card-text>
+        <b-card-text> mijn rating: {{ this.gebruiker.rating }} </b-card-text>
       </b-card>
     </div>
     <div v-else>
@@ -18,6 +20,7 @@
         </b-card-text>
 
         <b-card-text> email: {{ this.gebruiker.email }} </b-card-text>
+        <b-card-text> rating: {{ this.gebruiker.rating }} </b-card-text>
         <b-row align-h="center">
           <b-col cols="3">
             <b-button @click="nieuwePartijOpstellen()">Partij beginnen</b-button>
@@ -33,7 +36,7 @@
     <h2 class="card-header">Partijen die nog bezig zijn</h2>
     <div>
       <unfinished-games-table
-        v-bind:partijenDieNogBezigZijn="partijenDieNogBezigZijn"
+        v-bind:partijenDieNogBezigZijn="this.partijenDieNogBezigZijn"
         v-bind:fieldsVoorPartijenDieNogBezigZijn="
           fieldsVoorPartijenDieNogBezigZijn
         "
@@ -43,14 +46,18 @@
     <br /><br /><br />
     <h2 class="card-header">Partijen die afgelopen zijn</h2>
     <div>
-      {{this.partijenDieAfgelopenZijn}}
-      <finished-games-table
-        v-bind:partijenDieAfgelopenZijn="partijenDieAfgelopenZijn"
+      <finished-games-table 
+        v-bind:partijenDieAfgelopenZijn="this.partijenDieAfgelopenZijn"
         v-bind:fieldsVoorPartijenDieAfgelopenZijn="
           fieldsVoorPartijenDieAfgelopenZijn
         "
         v-bind:sort="sortByPartijenDieAfgelopenZijn"
       />
+    </div>
+    </div>
+    <div v-else align="center" class="mt-5">
+      Er is iets fout gegaan <br/><br/>
+      <b-button @click="gaNaarLogin()">Login</b-button>
     </div>
   </div>
 </template>
@@ -79,6 +86,7 @@ export default {
       gebruiker: this.$route.params.gebruiker,
       partijenDieNogBezigZijn: [],
       partijenDieAfgelopenZijn: [],
+      listsFilled:false,
       fieldsVoorPartijenDieNogBezigZijn: [
         { key: "white", label: "witspeler", sortable: "true" },
         { key: "black", label: "zwartspeler", sortable: "true" },
@@ -91,9 +99,13 @@ export default {
         { key: "inspect", label: "partij openen" },],
       sortByPartijenDieNogBezigZijn: "moves",
       sortByPartijenDieAfgelopenZijn: "result",
+      apiDomain: "",
     };
   },
   methods: {
+    gaNaarLogin(){
+    this.$router.push({ name: "login"});  
+    },
     contactVanUser() {
       return false;
     },
@@ -102,21 +114,31 @@ export default {
     },
     async nieuwePartijOpstellen(){
       this.$router.push({ name: "newGame", params: { uitgedaagdeGebruiker : this.gebruiker, uitdager: (await Axios.
-      get("https://i417025core.venus.fhict.nl/gebruiker/GetByEmail/" + this.user.data.email)).data}});
+      get(this.apiDomain + "gebruiker/GetByEmail/" + this.user.data.email)).data}});
 
     }
   },
   created() {
-   Axios.
-    get("https://i417025core.venus.fhict.nl/partij/GetAll/" + this.gebruiker.id).
-    then(
-      (res) =>
-        (console.log(res),this.partijenDieNogBezigZijn = res.data.partijenDieNogBezigZijn,
-      this.partijenDieAfgelopenZijn = res.data.partijenDieAfgelopenZijn)
-    );
-       
-    
+    if(window.location.href.substring(0, 16) === "http://localhost"){
+        this.apiDomain = "https://localhost:44300/";
+      }
+      else{
+        this.apiDomain = "https://i417025core.venus.fhict.nl/";
+      }
+    Axios
+      .get(this.apiDomain + "partij/GetAll/" + this.gebruiker.id)
+      .then((res) => (this.partijenDieNogBezigZijn = res.data.partijenDieNogBezigZijn, this.partijenDieAfgelopenZijn = res.data.partijenDieAfgelopenZijn, this.listsFilled = true))
+      .catch((err)=> console.log(err));
+
   },
+  updated(){
+    if(!this.listsFilled){
+      Axios
+      .get(this.apiDomain + "partij/GetAll/" + this.gebruiker.id)
+      .then((res) => (this.partijenDieNogBezigZijn = res.data.partijenDieNogBezigZijn, this.partijenDieAfgelopenZijn = res.data.partijenDieAfgelopenZijn, this.listsFilled = true))
+      .catch((err)=> console.log(err));
+    }
+  }
 };
 </script>
 
