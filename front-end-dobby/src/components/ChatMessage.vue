@@ -1,7 +1,7 @@
 <template>
     <div>
         <p>
-        {{message.color}}: {{message.text}}
+            {{message.afzender.gebruikersnaam}}: {{message.tekst}} om {{new Date(message.datum).toDateString()}}
         </p>
     </div>
 </template>>

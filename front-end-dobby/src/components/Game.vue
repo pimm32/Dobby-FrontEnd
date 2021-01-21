@@ -1,5 +1,29 @@
 <template>
- <div id="test"> {{board2}} </div>
+ <div id="test"> 
+   <h2 class="card-header">Partij</h2>
+   <b-row>
+     <div ref="dambord" style="width: 500px"></div>
+   {{this.partij.position()}}
+   </b-row>
+   <h5 class="card-header">Mogelijke zetten</h5>
+   <b-row>
+
+   <div v-for="zet in this.mogelijkeZetten" :key="zet.value">
+     <b-col cols="3">
+     <b-button @click="speelZet(zet.from, zet.to)">
+     {{zet.from}}
+     <span v-if="zet.piecesTaken == undefined">
+       -
+     </span>
+     <span v-else>
+       *
+     </span>
+     {{zet.to}}
+     </b-button>
+     </b-col>
+   </div>
+   </b-row>
+  </div>
 </template>
 
 <script>
@@ -7,14 +31,15 @@ import Vue from "vue";
 import vueBootstrap from "bootstrap-vue";
 import lod from "lodash";
 import draughts from "draughts";
-import draughtsBoard from "draughtsboard";
+import draughtsboard from "draughtsboard";
 Vue.use(vueBootstrap);
 export default {
   props: ["board"],
   data() {
     return {
       partij: typeof draughts,
-      board2: typeof draughtsBoard,
+      diagram: typeof draughtsboard,
+      mogelijkeZetten: [],
     };
   },
   computed: {
@@ -22,24 +47,15 @@ export default {
       return lod.chunk(this.board, 10);
     },
   },
-  created() {
-    this.partij = new draughts();
-    console.log(this.partij);
-    console.log(this.partij.fen())
-    console.log(this.partij.ascii());
-    console.log(this.partij.getMoves());
-    
-  },
   mounted() {
-    
-    this.board2 = new draughtsBoard("test");
-    this.board2.position = this.partij.fen();
-    console.log(this.board2);
-    
+    this.partij = new draughts();
+    this.mogelijkeZetten = this.partij.moves();
+    //
+        
   },
   methods: {
-    test(){
-      console.log(this.partij.getLegalMoves());
+    /*test(){
+      console.log(this.partij.generate_moves(32));
     },
     onSnapEnd() {
       //this.board2.position(this.partij.fen());
@@ -53,21 +69,19 @@ export default {
       // rest of the coe
       console.log(square, piece);
       console.log(moves);
-    },
-    onDrop(source, target) {
+    },*/
+    speelZet(van, naar) {
       // see if the move is legal
       var move = this.partij.move({
-        from: source,
-        to: target,
+        from: van,
+        to: naar,
       });
       // illegal move
-      if (move === null) return "snapback";
-      console.log(source, target);
-    },
-    onDragStart(source, piece, position, orientation) {
-      // do not pick up pieces if the game is over
-      if (this.partij.gameOver()) return false;
-      console.log(source, piece, position, orientation);
+      if (move === null) {alert("Geen geldige zet!!"); return }
+      else{
+      this.mogelijkeZetten = this.partij.moves();
+      }
+
     },
   },
 };

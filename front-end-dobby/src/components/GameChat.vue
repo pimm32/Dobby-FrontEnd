@@ -1,8 +1,9 @@
 <template>
     <div>
+        <h2 class="card-header">Chat</h2>
         <ul class="demo">
-            <li v-for="message in chat" :key="message.text">
-                <ChatMessage v-bind:message="message"/>
+            <li v-for="bericht in chat.berichten" :key="bericht.id">
+                <ChatMessage v-bind:message="bericht"/>
             </li>
         </ul>
     </div>

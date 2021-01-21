@@ -95,8 +95,6 @@ export default {
       else{
         this.apiDomain = "https://i417025core.venus.fhict.nl/";
       }
-    console.log(window.location.href.substring(0,15))
-    console.log(this.apiDomain)
       axios
       .get(this.apiDomain +"gebruiker/GetAll")
       .then((res) => (this.gebruikersLijst = res.data, this.totalRows =this.gebruikersLijst.length))

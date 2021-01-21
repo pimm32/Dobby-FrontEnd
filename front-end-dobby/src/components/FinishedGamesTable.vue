@@ -53,6 +53,12 @@ export default {
         return{
 
         }
+    },
+    methods:{
+      bekijkPartij(obj){
+      this.$router.push({ name: "Play", params: { game: obj }});
+
+      }
     }
 }
 </script>

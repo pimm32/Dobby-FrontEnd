@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import PlayPage from './Views/PlayPage.vue'
 import GamesPage from './Views/GamesPage.vue'
-import ContactPage from './Views/ContactPage.vue'
 import AccountPage from './Views/AccountPage.vue'
 import NewGamePage from './Views/NewGamePage.vue'
 import Login from "./components/Login.vue"
@@ -29,11 +28,6 @@ Vue.use(Router)
         path: '/games',
         name: 'Games',
         component: GamesPage
-      },
-      {
-        path: '/contacts',
-        name: 'Contact',
-        component: ContactPage
       },
       {
         path: '/players',

@@ -1,5 +1,6 @@
 <template>
     <div>
+        <h2 class="card-header">Zetten</h2>
         <ul class="demo">
             <b-row>
                 <b-col cols="6" v-for="zet in zetten" :key="zet.id">

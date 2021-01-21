@@ -17,7 +17,7 @@
           v-model="gebruikersnaam"
           type="text"
           required
-          placeholder="Grootvader078"
+          placeholder="DamKoning078"
         >
         </b-form-input>
       </b-form-group>
@@ -32,7 +32,7 @@
           v-model="email"
           type="email"
           required
-          placeholder="Poppey@eye.com"
+          placeholder="haarlemmer@kingshot.com"
         >
         </b-form-input>
       </b-form-group>
@@ -124,7 +124,6 @@ export default {
         .catch(err => {
           alert(err.message)
         })
-        console.log(this.gebruikersnaam);
     },
     Register(){
         Axios({

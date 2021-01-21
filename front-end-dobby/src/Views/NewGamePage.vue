@@ -13,8 +13,6 @@
       <b-button @click="GaNaarHome">Terug naar home</b-button>
     </div>
     <div v-else>
-      {{ this.uitgedaagdeGebruiker }}
-      {{ this.uitdager }}
       <b-form
         style="margin-left: 25%"
         @submit="PartijToevoegen"
@@ -168,13 +166,6 @@ export default {
       ) {
         alert("controleer uw input, iets klopt niet");
       }
-      var newPartij = {
-        SpeeltempoMinuten: this.speeltempoBerekenen(),
-        SpeeltempoFisherSeconden: this.speeltempoFisherBerekenen(),
-        TijdWitSpeler: this.speeltempoBerekenen(),
-        TijdZwartSpeler: this.speeltempoBerekenen(),
-      };
-      console.log(newPartij);
       this.partij = (await Axios({
         method: "post",
         url: this.apiDomain + "partij/Post",
@@ -195,7 +186,6 @@ export default {
           kleur1 = "Zwart";
           kleur2 = "Wit";
       }
-      console.log(this.partij)
       Axios({
         method: "post",
         url: this.apiDomain + "speler/Post",

@@ -8,10 +8,8 @@
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav>
             <b-nav-item to="/">Home</b-nav-item>
-            <b-nav-item to="/play">Speel</b-nav-item>
             <b-nav-item to="/games"> Partijen</b-nav-item>
             <b-nav-item to="/players"> Gebruikers</b-nav-item>
-            <b-nav-item v-if="user.loggedIn" to="/contacts"> Contacten</b-nav-item>
             <b-nav-item v-if="user.loggedIn" :disabled="!this.user.data" @click="inspecteerGebruiker()"> Account</b-nav-item>
             <b-nav-item v-if="user.loggedIn"><a @click.prevent="signOut"> Log Out</a></b-nav-item>
             <b-nav-item v-if="!user.loggedIn" to="/login"> Login</b-nav-item>

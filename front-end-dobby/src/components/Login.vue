@@ -77,12 +77,11 @@ export default {
         .auth()
         .signInWithEmailAndPassword(this.email, this.wachtwoord)
         
-        .then(data => {
-          this.$router.replace({ name: "dashboard" });
-          console.log(data);
-        })
+        .then(
+          this.$router.replace({ name: "dashboard" })
+        )
         .catch(err => {
-          this.error = err.message;
+          alert(err.message);
         });
       
     },
