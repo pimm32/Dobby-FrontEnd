@@ -8,19 +8,19 @@
     <b-row align-v="center" align-h="center">
       <b-col cols="4">
 
-     <img src="../../afbeeldingen/pimjos11.png" style="margin-right: 50%" title="Het aanstormende talent behaalt remise tegen de bekende grootmeester Jos Stokkel"/>
+     <img src="../../img/pimjos11.png" style="margin-right: 50%" title="Het aanstormende talent behaalt remise tegen de bekende grootmeester Jos Stokkel"/>
 
       </b-col>
       <b-col cols="8">
         <b-row align-h="center">
           <b-col cols="9">
-            <img src="../../afbeeldingen/combi1.png" style="margin-right: 50%" title="De halve maan slag, zie jij 'm?"/>
+            <img src="../../img/combi1.png" style="margin-right: 50%" title="De halve maan slag, zie jij 'm?"/>
           </b-col>
           <b-col cols="9">
-            <img src="../../afbeeldingen/combi2.png" style="margin-right: 50%" title="Een mooie rondslag"/>
+            <img src="../../img/combi2.png" style="margin-right: 50%" title="Een mooie rondslag"/>
           </b-col>
           <b-col cols="9">
-            <img src="../../afbeeldingen/combi3.png" style="margin-right: 50%" title="Een leuk zetje met een mooi eindspel!"/>
+            <img src="../../img/combi3.png" style="margin-right: 50%" title="Een leuk zetje met een mooi eindspel!"/>
           </b-col>
         </b-row>
       </b-col>
