@@ -4,15 +4,11 @@
       align="center"
       class="mt-5"
       v-if="
-        this.$route.params.uitgedaagdeGebruiker == null ||
-        this.$route.params.uitdager == null ||
-        this.user.data == null
+        this.$route.params.uitgedaagdeGebruiker != null &&
+        this.$route.params.uitdager != null &&
+        this.user.data != null
       "
     >
-      Er is iets fout gegaan probeer het opnieuw <br /><br /><br /><br />
-      <b-button @click="GaNaarHome">Terug naar home</b-button>
-    </div>
-    <div v-else>
       <b-form
         style="margin-left: 25%"
         @submit="PartijToevoegen"
@@ -124,6 +120,10 @@
         </b-row>
       </b-form>
     </div>
+    <div v-else>
+      Er is iets fout gegaan probeer het opnieuw <br /><br /><br /><br />
+      <b-button @click="GaNaarHome">Terug naar home</b-button>
+    </div>
   </div>
 </template>
 
@@ -156,7 +156,6 @@ export default {
   },
   methods: {
     async PartijToevoegen(e) {
-      
       e.preventDefault();
       if (
         this.speeltempo == null ||
@@ -166,46 +165,72 @@ export default {
       ) {
         alert("controleer uw input, iets klopt niet");
       }
-      this.partij = (await Axios({
-        method: "post",
-        url: this.apiDomain + "partij/Post",
-        data: {
-          SpeeltempoMinuten: this.speeltempoBerekenen(),
-        SpeeltempoFisherSeconden: this.speeltempoFisherBerekenen(),
-        TijdWitSpeler: this.speeltempoBerekenen(),
-        TijdZwartSpeler: this.speeltempoBerekenen(),
-        },
-      })).data;
+      this.partij = (
+        await Axios({
+          method: "post",
+          url: this.apiDomain + "partij/Post",
+          data: {
+            SpeeltempoMinuten: this.speeltempoBerekenen(),
+            SpeeltempoFisherSeconden: this.speeltempoFisherBerekenen(),
+            TijdWitSpeler: this.speeltempoBerekenen(),
+            TijdZwartSpeler: this.speeltempoBerekenen(),
+          },
+        })
+      ).data;
       let kleur1;
       let kleur2;
-      if(this.kleurUitdager === "wit"){
-          kleur1 = "Wit";
-          kleur2 = "Zwart";
+      if (this.kleurUitdager === "wit") {
+        kleur1 = "Wit";
+        kleur2 = "Zwart";
+      } else {
+        kleur1 = "Zwart";
+        kleur2 = "Wit";
       }
-      else{
-          kleur1 = "Zwart";
-          kleur2 = "Wit";
-      }
-      Axios({
+      await Axios({
         method: "post",
         url: this.apiDomain + "speler/Post",
         data: {
-         gebruikerId: this.uitdager.id,
-         ratingAanBeginVanWedstrijd: this.uitdager.rating,
-         partijId: this.partij.id,
-         kleurSpeler: kleur1
+          gebruikerId: this.uitdager.id,
+          ratingAanBeginVanWedstrijd: this.uitdager.rating,
+          partijId: this.partij.id,
+          kleurSpeler: kleur1,
         },
       });
-      Axios({
+      await Axios({
         method: "post",
         url: this.apiDomain + "speler/Post",
         data: {
-         gebruikerId: this.uitgedaagdeGebruiker.id,
-         ratingAanBeginVanWedstrijd: this.uitgedaagdeGebruiker.rating,
-         partijId: this.partij.id,
-         kleurSpeler: kleur2
+          gebruikerId: this.uitgedaagdeGebruiker.id,
+          ratingAanBeginVanWedstrijd: this.uitgedaagdeGebruiker.rating,
+          partijId: this.partij.id,
+          kleurSpeler: kleur2,
         },
-      })
+      });
+      await Axios({
+        method: "post",
+        url: this.apiDomain + "chat/Post",
+        data: {
+          partijId: this.partij.id,
+        },
+      });
+      this.$notify({
+        group: "top-ctr",
+        title: "Nieuwe partij gestart!",
+        text:
+          "U heeft zojuist een nieuwe partij gestart, u wordt nu naar uw persoonlijke pagina gestuurd",
+        duration: 10000,
+        type: "success",
+      });
+      this.$router.push({
+        name: "Account",
+        params: {
+          gebruiker: (
+            await Axios.get(
+              this.apiDomain + "gebruiker/GetByEmail/" + this.user.data.email
+            )
+          ).data,
+        },
+      });
     },
     GaNaarHome() {
       this.$router.push({ name: "Home" });
@@ -241,12 +266,11 @@ export default {
     },
   },
   created() {
-      if(window.location.href.substring(0, 16) === "http://localhost"){
-        this.apiDomain = "https://localhost:44300/";
-      }
-      else{
-        this.apiDomain = "https://i417025core.venus.fhict.nl/";
-      }
+    if (window.location.href.substring(0, 16) === "http://localhost") {
+      this.apiDomain = "https://localhost:44300/";
+    } else {
+      this.apiDomain = "https://i417025core.venus.fhict.nl/";
+    }
   },
 };
 </script>

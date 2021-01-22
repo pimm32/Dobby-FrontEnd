@@ -134,7 +134,16 @@ export default {
         Email: this.email,
         Rating: 1200,
         },
-      });
+      })
+      .then(
+        this.$notify({
+        group: "top-ctr",
+        title: "Succesvolle registratie!",
+        text: "Gefeliciteerd u heeft succesvol uw nieuwe account("+this.gebruikersnaam+") geregistreerd!",
+        duration: 10000,
+        type: "success"
+        
+      }));
     },
     Reset(e) {
       e.preventDefault();

@@ -59,34 +59,46 @@
         </b-col>
         <b-col cols="4">
           <h2 class="card-header">Contacten</h2>
-          <div v-if="this.contacten.length != 0 && this.user.data.email == this.gebruiker.email">
-          <b-list-group>
-            <b-list-group-item v-for="contact in contacten" :key="contact.id">
-              <b-row>
-                <b-col cols=" 9">
-              {{ contact.contact.gebruikersnaam }} {{ contact.contact.rating }}
-                </b-col>
-                <b-col cols="3" >
-                <b-button @click="VerwijderContact(contact)" >Verwijder</b-button>
-                </b-col>
-              </b-row>
-            </b-list-group-item>
-          </b-list-group>
+          <div
+            v-if="
+              this.contacten.length != 0 &&
+              this.user.data.email == this.gebruiker.email
+            "
+          >
+            <b-list-group>
+              <b-list-group-item v-for="contact in contacten" :key="contact.id">
+                <b-row>
+                  <b-col cols=" 9">
+                    {{ contact.contact.gebruikersnaam }}
+                    {{ contact.contact.rating }}
+                  </b-col>
+                  <b-col cols="3">
+                    <b-button
+                      @click="ContactVerwijderenVerificatieModal(contact)"
+                      >Verwijder</b-button
+                    >
+                  </b-col>
+                </b-row>
+              </b-list-group-item>
+            </b-list-group>
           </div>
           <div v-else-if="this.contacten.length != 0">
             <b-list-group>
-            <b-list-group-item v-for="contact in contacten" :key="contact.id">
-              <b-row>
-                <b-col cols=" 9">
-              {{ contact.contact.gebruikersnaam }} {{ contact.contact.rating }}
-                </b-col>
-              </b-row>
-            </b-list-group-item>
-          </b-list-group>
-
+              <b-list-group-item v-for="contact in contacten" :key="contact.id">
+                <b-row>
+                  <b-col cols=" 9">
+                    {{ contact.contact.gebruikersnaam }}
+                    {{ contact.contact.rating }}
+                  </b-col>
+                </b-row>
+              </b-list-group-item>
+            </b-list-group>
           </div>
           <div v-else>
-            Geen contacten <span v-if="this.gebruiker.email == this.user.data.email">, volg mensen!</span>
+            Geen contacten
+            <span v-if="this.gebruiker.email == this.user.data.email"
+              >, volg mensen!</span
+            >
           </div>
         </b-col>
       </b-row>
@@ -168,15 +180,60 @@ export default {
           contactId: this.gebruiker.id,
         },
       })
-      .catch((err) => console.log(err));
+        .then(
+          this.$notify({
+            group: "btm-lft",
+            title: "Contact toegevoegd!",
+            text:
+              "Gefeliciteerd, u heeft zojuist een nieuw contact toegevoegd!",
+            duration: 10000,
+            type: "success",
+          })
+        )
+        .catch((err) => console.log(err));
     },
-    async VerwijderContact(obj){
+    ContactVerwijderenVerificatieModal: function (obj) {
+      this.boxTwo = "";
+      this.$bvModal
+        .msgBoxConfirm(
+          "Weet u zeker dat u " +
+            obj.contact.gebruikersnaam +
+            " als contact wilt verwijderen?",
+          {
+            title: "Bevestiging",
+            size: "sm",
+            buttonSize: "sm",
+            okVariant: "danger",
+            okTitle: "Ja",
+            cancelVariant: "primary",
+            cancelTitle: "Nee",
+            footerClass: "p-2",
+            hideHeaderClose: false,
+            centered: true,
+          }
+        )
+        .then((value) => {
+          this.boxTwo = value;
+          if (value == true) {
+            this.VerwijderContact(obj);
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+    async VerwijderContact(obj) {
       await Axios({
         method: "delete",
         url: this.apiDomain + "contact/Delete/" + obj.id,
       })
-      .then(this.contacten.splice(this.contacten.indexOf(obj), 1))
-      .catch((err) => console.log(err));
+        .then(this.contacten.splice(this.contacten.indexOf(obj), 1))
+        .catch((err) => console.log(err));
+      this.$notify({
+        group: "btm-lft",
+        title: "Contact verwijderd",
+        text: "U heeft zojuist een contact verwijderd",
+        duration: 10000,
+        type: "danger",
+      });
     },
     async nieuwePartijOpstellen() {
       this.$router.push({
@@ -189,6 +246,13 @@ export default {
             )
           ).data,
         },
+      });
+      this.$notify({
+        group: "btm-lft",
+        title: "Nieuwe partij",
+        text: "U staat op het punt om een nieuwe partij aan te maken",
+        duration: 10000,
+        type: "info",
       });
     },
   },

@@ -57,6 +57,7 @@ export default {
     },
     methods:{
       bekijkPartij(obj){
+        console.log(obj);
       this.$router.push({ name: "Play", params: { game: obj }});
 
       }

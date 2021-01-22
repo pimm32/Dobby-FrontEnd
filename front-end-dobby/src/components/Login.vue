@@ -78,6 +78,14 @@ export default {
         .signInWithEmailAndPassword(this.email, this.wachtwoord)
         
         .then(
+          this.$notify({
+        group: "top-ctr",
+        title: "Succesvol ingelogd!",
+        text: "U bent succesvol ingelogd!",
+        duration: 10000,
+        type: "success"
+        
+      }),
           this.$router.replace({ name: "dashboard" })
         )
         .catch(err => {

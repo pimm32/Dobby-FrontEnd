@@ -11,10 +11,16 @@
             <b-nav-item to="/games"> Partijen</b-nav-item>
             <b-nav-item to="/players"> Gebruikers</b-nav-item>
             <b-nav-item v-if="user.loggedIn" :disabled="!this.user.data" @click="inspecteerGebruiker()"> Account</b-nav-item>
-            <b-nav-item v-if="user.loggedIn"><a @click.prevent="signOut"> Log Out</a></b-nav-item>
-            <b-nav-item v-if="!user.loggedIn" to="/login"> Login</b-nav-item>
-            <b-nav-item v-if="!user.loggedIn" to="/register"> Register</b-nav-item>
-            
+          </b-navbar-nav>
+          <b-navbar-nav class="ml-auto">
+            <b-nav-item-dropdown>
+              <template #button-content>
+                <em>Mijn Account</em>
+              </template>
+            <b-dropdown-item v-if="user.loggedIn"><a @click="signOut"> Uitloggen</a></b-dropdown-item>
+            <b-dropdown-item v-if="!user.loggedIn" to="/login"> Inloggen</b-dropdown-item>
+            <b-dropdown-item v-if="!user.loggedIn" to="/register"> Registreren</b-dropdown-item>
+            </b-nav-item-dropdown>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
@@ -43,11 +49,18 @@ export default {
       firebase
         .auth()
         .signOut()
-        .then(() => {
+        .then(this.$notify({
+        group: "top-ctr",
+        title: "Succesvol uitgelogd",
+        text: "Uw bent succesvol uitgelogd, tot de volgende keer!",
+        duration: 10000,
+        type: "warning"
+        
+      }),
           this.$router.replace({
-            name: "home"
-          });
-        });
+            name: "Home"
+          })
+        );
     },
     async inspecteerGebruiker(){
       this.$router.push({ name: 'Account', params: { gebruiker :  (await Axios.

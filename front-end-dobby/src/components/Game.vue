@@ -1,28 +1,52 @@
 <template>
- <div id="test"> 
-   <h2 class="card-header">Partij</h2>
-   <b-row>
-     <div ref="dambord" style="width: 500px"></div>
-   {{this.partij.position()}}
-   </b-row>
-   <h5 class="card-header">Mogelijke zetten</h5>
-   <b-row>
-
-   <div v-for="zet in this.mogelijkeZetten" :key="zet.value">
-     <b-col cols="3">
-     <b-button @click="speelZet(zet.from, zet.to)">
-     {{zet.from}}
-     <span v-if="zet.piecesTaken == undefined">
-       -
-     </span>
-     <span v-else>
-       *
-     </span>
-     {{zet.to}}
-     </b-button>
-     </b-col>
-   </div>
-   </b-row>
+  <div id="test">
+    <h2 class="card-header">Partij</h2>
+    Witspeler: {{ this.wit.gebruiker.gebruikersnaam }}<br />
+    Zwartspeler: {{ this.zwart.gebruiker.gebruikersnaam }}<br />
+    
+      <b-row>
+        <b-col cols="4">
+            {{ this.partijLogic.position() }}
+            <b-row v-if="this.speeltUser">
+              <b-col cols="6">
+                <b-button @click="geefPartijOp()"> Opgeven </b-button>
+              </b-col>
+              <b-col cols="6">
+                <b-button :disabled="isUserAanZet" @click="biedRemiseAan()"> Remise aanbieden</b-button>
+              </b-col>
+            </b-row>
+          <h5 class="card-header" v-if="this.isUserAanZet">U bent aan zet, kies een zet:</h5>
+          <b-row v-if="this.isUserAanZet">
+            <b-col
+              cols="6"
+              v-for="zet in this.mogelijkeZetten"
+              :key="zet.value"
+            >
+              <b-button @click="speelZet(zet.from, zet.to)">
+                {{ zet.from }}
+                <span v-if="zet.piecesTaken == undefined"> - </span>
+                <span v-else> * </span>
+                {{ zet.to }}
+              </b-button>
+            </b-col>
+          </b-row>
+        </b-col>
+        <b-col cols="4">
+          <h5 class="card-header">Gespeelde zetten</h5>
+          <b-row>
+            <b-col
+              cols="6"
+              v-for="gespeeldeZet in this.partij.zetten"
+              :key="gespeeldeZet.value"
+            >
+              {{ gespeeldeZet.beginVeld}} - {{gespeeldeZet.eindVeld}}
+            </b-col>
+          </b-row>
+        </b-col>
+        <b-col>
+          <game-chat v-bind:chat="this.partij.chat" v-bind:userSpeeltPartij="this.speeltUser" v-on:add-message="AddMessageToChat"/>
+        </b-col>
+      </b-row>
   </div>
 </template>
 
@@ -32,12 +56,17 @@ import vueBootstrap from "bootstrap-vue";
 import lod from "lodash";
 import draughts from "draughts";
 import draughtsboard from "draughtsboard";
+import GameChat from "./GameChat.vue";
 Vue.use(vueBootstrap);
 export default {
-  props: ["board"],
+  name: 'Game',
+  props: ["partij", "speeltUser", "isUserAanZet", "wit", "zwart"],
+  components:{
+    GameChat,
+  },
   data() {
     return {
-      partij: typeof draughts,
+      partijLogic: typeof draughts,
       diagram: typeof draughtsboard,
       mogelijkeZetten: [],
     };
@@ -48,10 +77,22 @@ export default {
     },
   },
   mounted() {
-    this.partij = new draughts();
-    this.mogelijkeZetten = this.partij.moves();
-    //
+      this.partijLogic = new draughts()
+    if(this.partij.zetten.length > 0){
+     /* for (let index = 0; index < this.partij.zetten.length; index++) {
+        const element = this.partij.zetten[index];
+        this.partijLogic.move({
+          from: element.beginVeld,
+          to: element.eindVeld,
+        })
+        console.log("zet gespeeld");
         
+      }*/
+      this.partijLogic = new draughts(this.partij.zetten[this.partij.zetten.length-1].standNaZet);
+    }
+      console.log(this.partijLogic.fen());
+    this.mogelijkeZetten = this.partijLogic.moves();
+    //
   },
   methods: {
     /*test(){
@@ -72,17 +113,49 @@ export default {
     },*/
     speelZet(van, naar) {
       // see if the move is legal
-      var move = this.partij.move({
+      var move = this.partijLogic.move({
         from: van,
         to: naar,
       });
-      // illegal move
-      if (move === null) {alert("Geen geldige zet!!"); return }
-      else{
-      this.mogelijkeZetten = this.partij.moves();
+      var newMove = {
+        beginVeld: van,
+        eindVeld: naar,
+        partijId: this.partij.id,
+        standNaZet: this.partijLogic.fen(),
       }
-
+      console.log(this.partijLogic.fen());
+      console.log(newMove)
+      // illegal move
+      if (move === null) {
+        alert("Geen geldige zet!!");
+        return;
+      } else if (this.partijLogic.inDraw()) {
+      this.$emit("add-move-to-game", newMove);
+        //uitslag remise db update
+        alert("REMISE BITCHES");
+        return;
+      } else if (this.partijLogic.gameOver()) {
+      this.$emit("add-move-to-game", newMove);
+        //uitslag winst voor laatste speler die aan zet was
+          this.mogelijkeZetten = [],
+          this.partijLogic.undo();
+        alert("POTJE OVER" + this.partijLogic.turn() + " HEEFT GEWONNEN");
+      } else {
+      this.$emit("add-move-to-game", newMove);
+        this.mogelijkeZetten = this.partijLogic.moves();
+        return;
+      }
     },
+    AddMessageToChat(bericht){
+      this.$emit("add-message-to-chat", bericht);
+    },
+    biedRemiseAan(){
+      this.$emit("remise-aanbieden");
+    },
+    geefPartijOp(){
+      this.$emit("partij-opgeven");
+    }
+
   },
 };
 </script>
@@ -107,11 +180,11 @@ export default {
   position: relative;
   /* disable any native browser highlighting */
   -webkit-touch-callout: none;
-    -webkit-user-select: none;
-     -khtml-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /* white square */
@@ -119,7 +192,8 @@ export default {
   background-color: #fff;
   color: #31708f;
 }
-.unicode.w, .unicode.W {
+.unicode.w,
+.unicode.W {
   color: #fff;
 }
 /* black square */
@@ -127,7 +201,8 @@ export default {
   background-color: #31708f;
   color: #fff;
 }
-.unicode.b, .unicode.B {
+.unicode.b,
+.unicode.B {
   color: #000;
 }
 .unicode {
@@ -139,7 +214,8 @@ export default {
   top: -40%;
 }
 /* highlighted square */
-.highlight1-32417, .highlight2-9c5d2 {
+.highlight1-32417,
+.highlight2-9c5d2 {
   -webkit-box-shadow: inset 0 0 3px 3px #31b0d5;
   -moz-box-shadow: inset 0 0 3px 3px #31b0d5;
   box-shadow: inset 0 0 3px 3px #31b0d5;

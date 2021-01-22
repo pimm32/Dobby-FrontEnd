@@ -1,7 +1,7 @@
 <template>
     <div>
         <p>
-            {{message.afzender.gebruikersnaam}}: {{message.tekst}} om {{new Date(message.datum).toDateString()}}
+            {{message.afzender.gebruikersnaam}}: {{message.tekst}} <br/> {{new Date(message.datum).toLocaleString()}}
         </p>
     </div>
 </template>>

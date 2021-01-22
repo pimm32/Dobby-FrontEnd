@@ -1,180 +1,266 @@
-<template>
-  <div>
-    <br />
-    <br />
-    <br />
-    <b-row>
-      <b-col cols="2">
-        {{ wit.gebruiker.gebruikersnaam }}
-      </b-col>
-      <b-col cols="2">
-        {{ partij.tijdWitSpeler }}
-      </b-col>
-    </b-row>
-    <br />
-    <br />
-    <br />
-    <br />
-    <b-row>
-      <b-col cols="4">
-        <Game />
-      </b-col>
-      <b-col cols="3" height="120px">
-        <zetten-lijst v-bind:zetten="this.partij.zetten" />
-      </b-col>
-      <b-col cols="3">
-        <game-chat v-bind:chat="this.partij.chat" />
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="2">
-        {{ zwart.gebruiker.gebruikersnaam }}
-      </b-col>
-      <b-col cols="2">
-        {{ partij.tijdZwartSpeler }}
-      </b-col>
-    </b-row>
+ <template>
+  <div id="app">
+    <div v-if="this.user.data && this.partij != null">
+    <Game
+      v-bind:isUserAanZet="this.SpelerAanZet()"
+      v-bind:speeltUser="this.SpelerDoetAanPartijMee()"
+      v-bind:partij="this.partij"
+      v-bind:wit="this.wit"
+      v-bind:zwart="this.zwart"
+      v-on:add-message-to-chat="addMessage"
+      v-on:add-move-to-game="addZetVerificatieModal"
+      v-on:remise-aanbieden="remiseAanbieden"
+      v-on:partij-opgeven="partijOpgevenVerificatieModal"
+    />
+    </div>
+    <div v-else-if="this.partij!=null">
+      <Game
+      v-bind:isUserAanZet="false"
+      v-bind:speeltUser="false"
+      v-bind:partij="this.partij"
+      v-bind:wit="this.wit"
+      v-bind:zwart="this.zwart"
+    />
+    </div>
+    <div v-else class="mt-5" align="center">
+      <span> Oops er gaat iets fout! </span><br/><br/>
+      <b-button @click="$router.push({ name: 'Home'})"> Klik hier om naar de homepagina te gaan</b-button>
+    </div>
   </div>
 </template>
 
 <script>
 import Game from "../components/Game";
-import GameChat from "../components/GameChat.vue";
-//import axios from "axios";
-import ZettenLijst from "../components/ZettenLijst.vue";
+import { mapGetters } from "vuex";
+//import GameChat from "../components/GameChat.vue";
+import axios from "axios";
+//import ZettenLijst from "../components/ZettenLijst.vue";
 export default {
+  name: "playpage",
+  components: {
+    // GameChat,
+    Game,
+    //GameChat,
+    //ZettenLijst,
+  },
+
+  computed: {
+    ...mapGetters({
+      // map `this.user` to `this.$store.getters.user`
+      user: "user",
+    }),
+  },
   data() {
     return {
       partij: this.$route.params.game,
       wit: null,
       zwart: null,
       apiDomain: "",
-      bord: [
-        { color: "light", field: 0 },
-        { piece: "black", field: 1 },
-        { color: "light", field: 2 },
-        { piece: "black", field: 3 },
-        { color: "light", field: 4 },
-        { piece: "black", field: 5 },
-        { color: "light", field: 6 },
-        { piece: "black", field: 7 },
-        { color: "light", field: 8 },
-        { piece: "black", field: 9 },
-        { piece: "black", field: 10 },
-        { color: "light", field: 11 },
-        { piece: "black", field: 12 },
-        { color: "light", field: 13 },
-        { piece: "black", field: 14 },
-        { color: "light", field: 15 },
-        { piece: "black", field: 16 },
-        { color: "light", field: 17 },
-        { piece: "black", field: 18 },
-        { color: "light", field: 19 },
-        { color: "light", field: 20 },
-        { piece: "black", field: 21 },
-        { color: "light", field: 22 },
-        { piece: "black", field: 23 },
-        { color: "light", field: 24 },
-        { piece: "black", field: 25 },
-        { color: "light", field: 26 },
-        { piece: "black", field: 27 },
-        { color: "light", field: 28 },
-        { piece: "black", field: 29 },
-        { piece: "black", field: 30 },
-        { color: "light", field: 31 },
-        { piece: "black", field: 32 },
-        { color: "light", field: 33 },
-        { piece: "black", field: 34 },
-        { color: "light", field: 35 },
-        { piece: "black", field: 36 },
-        { color: "light", field: 37 },
-        { piece: "black", field: 38 },
-        { color: "light", field: 39 },
-        { color: "light", field: 40 },
-        { color: "dark", field: 41 },
-        { color: "light", field: 42 },
-        { color: "dark", field: 43 },
-        { color: "light", field: 44 },
-        { color: "dark", field: 45 },
-        { color: "light", field: 46 },
-        { color: "dark", field: 47 },
-        { color: "light", field: 48 },
-        { color: "dark", field: 49 },
-        { color: "dark", field: 50 },
-        { color: "light", field: 51 },
-        { color: "dark", field: 52 },
-        { color: "light", field: 53 },
-        { color: "dark", field: 54 },
-        { color: "light", field: 55 },
-        { color: "dark", field: 56 },
-        { color: "light", field: 57 },
-        { color: "dark", field: 58 },
-        { color: "light", field: 59 },
-        { color: "light", field: 60 },
-        { color: "dark", piece: "white", field: 61 },
-        { color: "light", field: 62 },
-        { color: "dark", piece: "white", field: 63 },
-        { color: "light", field: 64 },
-        { color: "dark", piece: "white", field: 65 },
-        { color: "light", field: 66 },
-        { color: "dark", piece: "white", field: 67 },
-        { color: "light", field: 68 },
-        { color: "dark", piece: "white", field: 69 },
-        { color: "dark", piece: "white", field: 70 },
-        { color: "light", field: 71 },
-        { color: "dark", piece: "white", field: 72 },
-        { color: "light", field: 73 },
-        { color: "dark", piece: "white", field: 74 },
-        { color: "light", field: 75 },
-        { color: "dark", piece: "white", field: 76 },
-        { color: "light", field: 77 },
-        { color: "dark", piece: "white", field: 78 },
-        { color: "light", field: 79 },
-        { color: "light", field: 80 },
-        { color: "dark", piece: "white", field: 81 },
-        { color: "light", field: 82 },
-        { color: "dark", piece: "white", field: 83 },
-        { color: "light", field: 84 },
-        { color: "dark", piece: "white", field: 85 },
-        { color: "light", field: 86 },
-        { color: "dark", piece: "white", field: 87 },
-        { color: "light", field: 88 },
-        { color: "dark", piece: "white", field: 89 },
-        { color: "dark", piece: "white", field: 90 },
-        { color: "light", field: 91 },
-        { color: "dark", piece: "white", field: 92 },
-        { color: "light", field: 93 },
-        { color: "dark", piece: "white", field: 94 },
-        { color: "light", field: 95 },
-        { color: "dark", piece: "white", field: 96 },
-        { color: "light", field: 97 },
-        { color: "dark", piece: "white", field: 98 },
-        { color: "light", field: 99 },
-      ],
       show: false,
     };
   },
-  async created() {
+  created() {
+    console.log(Date());
     if (window.location.href.substring(0, 16) === "http://localhost") {
       this.apiDomain = "https://localhost:44300/";
     } else {
       this.apiDomain = "https://i417025core.venus.fhict.nl/";
     }
-    if(this.partij.spelers[0].kleurSpeler == "Wit"){
-        this.wit = this.partij.spelers[0];
-        this.zwart = this.partij.spelers[1];
-    }
-    else{
-        this.wit = this.partij.spelers[1];
-        this.zwart = this.partij.spelers[0];
+    if (this.partij.spelers[0].kleurSpeler == "Wit") {
+      this.wit = this.partij.spelers[0];
+      this.zwart = this.partij.spelers[1];
+    } else {
+      this.wit = this.partij.spelers[1];
+      this.zwart = this.partij.spelers[0];
     }
   },
 
-  components: {
-    // GameChat,
-    Game,
-    GameChat,
-    ZettenLijst,
+  methods: {
+    SpelerAanZet() {
+      if (
+        this.user.data.email === this.wit.gebruiker.email &&
+        Object.keys(this.partij.zetten).length % 2 === 0
+      ) {
+        return true;
+      } else if (
+        this.user.data.email === this.zwart.gebruiker.email &&
+        Object.keys(this.partij.zetten).length % 2 === 1
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    SpelerDoetAanPartijMee() {
+      if (
+        this.user.data.email === this.wit.gebruiker.email ||
+        this.user.data.email === this.zwart.gebruiker.email
+      ) {
+        return true;
+      }
+      return false;
+    },
+    addMessage(bericht) {
+      //
+      let afzender;
+      if (this.user.data.email === this.wit.gebruiker.email) {
+        afzender = this.wit.gebruiker;
+      }
+      if (this.user.data.email === this.zwart.gebruiker.email) {
+        afzender = this.zwart.gebruiker;
+      }
+      let dateNow = new Date();
+      let newBericht = {
+        tekst: bericht,
+        datum: dateNow,
+        afzenderId: afzender.id,
+        afzender: afzender,
+        chatId: this.partij.chat.id,
+      };
+      axios({
+        method: "post",
+        url: this.apiDomain + "bericht/Post",
+        data: {
+          tekst: bericht,
+          datum: dateNow.toJSON(),
+          afzenderId: afzender.id,
+          chatId: this.partij.chat.id,
+        },
+      })
+        .then(this.$notify({
+        group: "btm-lft",
+        title: "Bericht verzonden",
+        text: "Uw bericht is succesvol verzonden",
+        duration: 10000,
+        type: "success"
+        
+      }),
+          (this.partij.chat.berichten = [
+            ...this.partij.chat.berichten,
+            newBericht,
+          ])
+        )
+        .catch((err) => console.log(err));
+    },
+    addZetVerificatieModal: function(zet){
+      this.boxTwo = ''
+        this.$bvModal.msgBoxConfirm('Weet u zeker dat u ' + zet.beginVeld +' naar ' + zet.eindVeld + ' wilt spelen?', {
+          title: 'Bevestiging',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Ja',
+          cancelVariant: 'primary',
+          cancelTitle: 'Nee',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+          .then(value => {
+            this.boxTwo = value
+            if (value == true) {
+              this.addZet(zet)
+            }
+          })
+          .catch(err=>console.log(err))
+    },
+    addZet(zet){
+      axios({
+        method: "post",
+        url: this.apiDomain + "zet/Post",
+        data: {
+          beginVeld: zet.beginVeld,
+          eindVeld: zet.eindVeld, 
+          partijId: zet.partijId, 
+          standNaZet: zet.standNaZet,
+        },
+      })
+        .then(this.$notify({
+        group: "btm-lft",
+        title: "Zet gespeeld",
+        text: "Uw heeft zojuist een zet gespeeld(" + zet.beginVeld+ "-/x" + zet.eindVeld+")",
+        duration: 10000,
+        type: "info"
+        
+      }),
+          this.partij.zetten = [
+            ...this.partij.zetten,
+            zet,
+          ]
+        )
+        .catch((err) => console.log(err));
+    },
+    remiseAanbieden(){
+      let spelerDieRemiseAanbied;
+      if(this.user.data.email === this.wit.gebruiker.email){
+        spelerDieRemiseAanbied = this.wit;
+      }
+      if(this.user.data.email === this.zwart.gebruiker.email){
+        spelerDieRemiseAanbied = this.zwart;
+      }
+      console.log(spelerDieRemiseAanbied)
+      axios({
+        
+      })
+        .then(
+         
+        )
+        .catch((err) => console.log(err));
+    },
+    partijOpgevenVerificatieModal: function(){
+      this.boxTwo = ''
+        this.$bvModal.msgBoxConfirm('Weet u zeker dat u deze partij op wilt geven?', {
+          title: 'Bevestiging',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Ja',
+          cancelVariant: 'primary',
+          cancelTitle: 'Nee',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+          .then(value => {
+            this.boxTwo = value
+            if (value == true) {
+              this.partijOpgeven()
+            }
+          })
+          .catch(err=>console.log(err))
+    },
+    async partijOpgeven(){
+      let uitslag;
+      if(this.user.data.email === this.wit.gebruiker.email){
+        uitslag = "0-2";
+      }
+      if(this.user.data.email === this.zwart.gebruiker.email){
+        uitslag = "2-0"
+      }
+
+      axios({
+        method: "put",
+        url: this.apiDomain + "partij/put/"+this.partij.id,
+        data: {
+          speeltempoMinuten: this.partij.speeltempoMinuten,
+          speeltempoFisherSeconden: this.partij.speeltempoFisherSeconden,
+          tijdWitSpeler: this.partij.tijdWitSpeler,
+          tijdZwartSpeler: this.partij.tijdZwartSpeler,
+          uitslag: uitslag,
+          id: this.partij.id
+        },
+      })
+      .then(this.$notify({
+        group: "btm-lft",
+        title: "Oops!!!!",
+        text: "Verloren, helaas, volgende keer beter! U wordt nu naar uw persoonlijke pagina gestuurd",
+        duration: 10000,
+        type: "dark"
+        
+      }),this.$router.push({ name: 'Account', params: { gebruiker :  (await axios.
+      get(this.apiDomain + "gebruiker/GetByEmail/" + this.user.data.email)).data }}));
+
+    }
   },
 };
 </script>
